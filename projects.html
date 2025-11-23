@@ -35,29 +35,28 @@
         .container {
             width: 100%;
             margin: 0 auto;
-            padding: 10px;
+            padding: 0;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
         
-        header {
-            text-align: center;
-            padding: 15px 0;
-            margin-bottom: 10px;
+        .header-container {
+            padding: 10px 15px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: var(--primary-color);
-            margin-bottom: 5px;
         }
         
         .official-channel {
             color: var(--light-text);
-            font-size: 14px;
-            margin-bottom: 5px;
+            font-size: 13px;
+            margin: 5px 0;
         }
         
         .swipe-hint {
@@ -67,11 +66,12 @@
             text-align: center;
             padding: 5px;
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin: 5px 0;
         }
         
         .service-tabs-container {
             position: relative;
+            margin-top: 5px;
         }
         
         .scroll-hint {
@@ -103,7 +103,6 @@
             display: flex;
             overflow-x: auto;
             background: white;
-            border-radius: 8px 8px 0 0;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             flex-shrink: 0;
             -webkit-overflow-scrolling: touch;
@@ -152,10 +151,9 @@
             flex: 1;
             min-height: 0;
             background: white;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
+            border-top: 1px solid #e0e0e0;
         }
         
         .iframe-container iframe {
@@ -192,20 +190,22 @@
         
         footer {
             text-align: center;
-            padding: 10px;
+            padding: 8px;
             color: var(--light-text);
             font-size: 12px;
             flex-shrink: 0;
+            background: white;
+            border-top: 1px solid #e0e0e0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+        <div class="header-container">
             <div class="logo">诗雨临时邮箱</div>
             <div class="official-channel">官方频道：@SYQQ91</div>
             <div class="swipe-hint">← 左右滑动切换邮箱 →</div>
-        </header>
+        </div>
         
         <div class="service-tabs-container">
             <div class="scroll-hint left">←</div>
@@ -221,7 +221,6 @@
                 </div>
                 <div class="service-tab" data-url="https://tempmailg.com/zh">TempMailG</div>
                 <div class="service-tab" data-url="https://10-minutemail.net/">10分钟邮箱</div>
-                <div class="service-tab" data-url="http://mx.tempmail.cn/">临时邮箱CN</div>
             </div>
         </div>
         
@@ -233,32 +232,98 @@
         </div>
         
         <footer>
-            <p>© 2023 诗雨临时邮箱</p>
+            <p>© 2025 诗雨临时邮箱</p>
         </footer>
     </div>
 
     <script>
+        // 优化1：使用IntersectionObserver预加载可见区域附近的iframe
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const url = entry.target.dataset.url;
+                    const preloadIframe = document.createElement('iframe');
+                    preloadIframe.src = url;
+                    preloadIframe.style.display = 'none';
+                    document.body.appendChild(preloadIframe);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            rootMargin: '50px 0px',
+            threshold: 0.1
+        });
+
+        // 优化2：使用requestIdleCallback进行后台预加载
+        document.addEventListener('DOMContentLoaded', () => {
+            const serviceUrls = [
+                "https://minmail.app/cn",
+                "https://tempmailg.com/zh",
+                "https://10-minutemail.net/"
+            ];
+
+            const preloadInIdleTime = (deadline) => {
+                while (serviceUrls.length > 0 && deadline.timeRemaining() > 0) {
+                    const url = serviceUrls.pop();
+                    const preloadIframe = document.createElement('iframe');
+                    preloadIframe.src = url;
+                    preloadIframe.style.display = 'none';
+                    document.body.appendChild(preloadIframe);
+                }
+                
+                if (serviceUrls.length > 0) {
+                    requestIdleCallback(preloadInIdleTime);
+                }
+            };
+
+            requestIdleCallback(preloadInIdleTime);
+        });
+
+        // 优化3：添加服务标签的IntersectionObserver
+        document.querySelectorAll('.service-tab').forEach(tab => {
+            observer.observe(tab);
+        });
+
+        // 优化4：使用缓存控制
+        const iframeCache = {};
+        
+        // 切换服务
         document.querySelectorAll('.service-tab').forEach(tab => {
             tab.addEventListener('click', function() {
+                // 更新活跃标签
                 document.querySelectorAll('.service-tab').forEach(t => {
                     t.classList.remove('active');
                 });
                 this.classList.add('active');
                 
+                // 显示加载状态
                 const loadingDiv = document.querySelector('.loading');
                 loadingDiv.style.display = 'flex';
                 
-                const iframe = document.getElementById('mail-frame');
-                iframe.src = this.dataset.url;
+                // 检查缓存
+                const url = this.dataset.url;
+                if (iframeCache[url]) {
+                    document.getElementById('mail-frame').src = iframeCache[url];
+                    loadingDiv.style.display = 'none';
+                    return;
+                }
                 
+                // 加载新iframe
+                const iframe = document.getElementById('mail-frame');
+                iframe.src = url;
+                
+                // iframe加载完成后隐藏加载状态并缓存
                 iframe.onload = function() {
                     loadingDiv.style.display = 'none';
+                    iframeCache[url] = url;
                 };
             });
         });
         
+        // 初始加载完成后隐藏加载状态
         document.getElementById('mail-frame').onload = function() {
             document.querySelector('.loading').style.display = 'none';
+            iframeCache["https://01022.hk/zh/tempemail.html"] = "https://01022.hk/zh/tempemail.html";
         };
     </script>
 </body>
