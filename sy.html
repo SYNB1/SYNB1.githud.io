@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答案展示━少羽牛逼</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+        }
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark);
+        }
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .main-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .answer-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .card-header {
+            background: var(--light);
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        .card-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .answer-image-container {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .answer-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .answer-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        .error {
+            color: #dc3545;
+            text-align: center;
+            padding: 1rem;
+            background: #fff0f0;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            .main-title {
+                font-size: 2rem;
+            }
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <h1 class="main-title">📚 答案展示平台</h1>
+            <p class="subtitle">仅供参考-请勿拿去做非法用途-仅供个人使用-仅供娱乐</p>
+        </header>
+
+        <div class="answer-card">
+            <div class="card-header">
+                <h2 class="card-title">语文</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="answer-image-container">
+                    <img id="answerImg" 
+                         class="answer-image"
+                         src="https://ftp.mioz.cn/test/2025/11/29/1764381575.JPG" 
+                         alt="题目答案"
+                         onload="document.getElementById('loading').style.display='none'"
+                         onerror="document.getElementById('loading').textContent='图片加载失败，请检查网络或刷新页面'; document.getElementById('loading').className='error'">
+                    <div id="loading" class="loading">正在加载答案...</div>
+                </div>
+
+                <div class="answer-meta">
+                    <span>更新时间: 2025年11月29日</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 图片加载状态检测
+        const imgElement = document.getElementById('answerImg');
+        const loadingElement = document.getElementById('loading');
+        
+        imgElement.addEventListener('load', function() {
+            loadingElement.style.display = 'none';
+        });
+        
+        imgElement.addEventListener('error', function() {
+            loadingElement.textContent = '图片加载失败，请检查网络或刷新页面';
+            loadingElement.className = 'error';
+        });
+    </script>
+</body>
+</html>
