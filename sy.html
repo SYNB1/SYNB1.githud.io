@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>少羽牛逼-答案展示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>少羽牛逼-答案查看器</title>
     <style>
         :root {
             --primary-color: #4285f4;
@@ -17,23 +17,26 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
         
         body {
             background: var(--bg-color);
             color: var(--text-color);
             line-height: 1.5;
+            padding: 10px;
+            -webkit-text-size-adjust: 100%;
         }
         
         .embedded-viewer {
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         
         .viewer-header {
@@ -42,6 +45,16 @@
             padding: 12px 16px;
             font-size: 16px;
             font-weight: 500;
+            text-align: center;
+        }
+        
+        .header-tip {
+            background: #f1f3f4;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #5f6368;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .tab-bar {
@@ -52,12 +65,16 @@
         
         .tab {
             flex: 1;
-            padding: 12px;
+            padding: 12px 8px;
             text-align: center;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
             border-bottom: 3px solid transparent;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .tab.active {
@@ -68,7 +85,7 @@
         
         .tab-content {
             display: none;
-            padding: 16px;
+            padding: 12px;
         }
         
         .tab-content.active {
@@ -77,21 +94,28 @@
         
         .image-container {
             position: relative;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             text-align: center;
+            height: 0;
+            padding-bottom: 140%; /* 更适合移动端的长图比例 */
+            overflow: hidden;
+            touch-action: manipulation;
         }
         
         .image-container img {
-            max-width: 100%;
-            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             border-radius: 4px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             cursor: zoom-in;
             transition: transform 0.2s;
-        }
-        
-        .image-container img:hover {
-            transform: scale(1.02);
+            border: 1px solid #eee;
+            background: #f5f5f5;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .image-info {
@@ -111,9 +135,64 @@
             display: flex;
             justify-content: space-between;
             margin-top: 12px;
+            gap: 8px;
         }
         
         .nav-btn {
+            padding: 10px 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            flex: 1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .nav-btn:hover {
+            background: var(--hover-color);
+        }
+        
+        .nav-btn:disabled {
+            background: #bdc1c6;
+            cursor: not-allowed;
+        }
+        
+        .announcement-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .announcement-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-close-btn {
+            margin-top: 15px;
             padding: 8px 16px;
             background: var(--primary-color);
             color: white;
@@ -124,13 +203,8 @@
             transition: background 0.2s;
         }
         
-        .nav-btn:hover {
+        .modal-close-btn:hover {
             background: var(--hover-color);
-        }
-        
-        .nav-btn:disabled {
-            background: #bdc1c6;
-            cursor: not-allowed;
         }
         
         .fullscreen-overlay {
@@ -147,6 +221,8 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s;
+            overflow: hidden;
+            touch-action: none;
         }
         
         .fullscreen-overlay.active {
@@ -154,44 +230,152 @@
             pointer-events: all;
         }
         
-        .fullscreen-img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
+        .zoomable-image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
         }
         
-        .close-btn {
+        .zoomable-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.1s;
+            transform-origin: 0 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .zoom-controls {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+        
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 480px) {
+            .tab {
+                padding: 10px 6px;
+                font-size: 13px;
+            }
+            
+            .nav-btn {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            
+            .image-container {
+                padding-bottom: 150%;
+            }
+            
+            .zoom-controls {
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .zoom-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+            
+            .close-btn {
+                top: 10px;
+                right: 10px;
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="announcement-modal">
+        <div class="modal-content">
+            <h3>网站公告</h3>
+            <p>本网站仅供个人娱乐，无任何违法行为，纯个人热爱</p>
+            <p>答案对不对我就不知道了🌝，第1次制作有bug正常🤔</p>
+            <button class="modal-close-btn">我知道了</button>
+        </div>
+    </div>
+
     <div class="embedded-viewer">
-        <div class="viewer-header">少羽牛逼━仅供个人娱乐</div>
+        <div class="viewer-header">少羽牛逼-答案查看器</div>
+        <div class="header-tip">点击图片可放大查看，双指可缩放</div>
         
         <div class="tab-bar">
             <div class="tab active" data-tab="chemistry">化学答案</div>
+            <div class="tab" data-tab="math">数学答案</div>
             <div class="tab" data-tab="chinese">语文答案</div>
         </div>
         
         <div class="tab-content active" id="chemistry">
             <div class="image-container">
-                <img src="https://origin.picgo.net/2025/11/29/IMG_20251129_10150270dc8d232eb2e755.md.jpg" alt="化学答案">
+                <div class="loading-spinner"></div>
+                <img src="https://origin.picgo.net/2025/11/29/IMG_20251129_10150270dc8d232eb2e755.md.jpg" alt="化学答案" loading="lazy">
                 <div class="image-info">化学答案 1/2</div>
-                <div class="zoom-hint">点击图片可放大查看</div>
+                <div class="zoom-hint">轻触图片可全屏查看</div>
             </div>
             
             <div class="nav-buttons">
@@ -200,11 +384,26 @@
             </div>
         </div>
         
+        <div class="tab-content" id="math">
+            <div class="image-container">
+                <div class="loading-spinner"></div>
+                <img src="https://origin.picgo.net/2025/11/29/IMG_20251129_105036ffdcf395a0f39c8a.md.jpg" alt="数学答案" loading="lazy">
+                <div class="image-info">数学答案</div>
+                <div class="zoom-hint">轻触图片可全屏查看</div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prev-math" disabled>上一张</button>
+                <button class="nav-btn" id="next-math" disabled>下一张</button>
+            </div>
+        </div>
+        
         <div class="tab-content" id="chinese">
             <div class="image-container">
-                <img src="https://origin.picgo.net/2025/11/29/-2025-11-29-09455be9e6ca21ae054a.md.png" alt="语文答案">
+                <div class="loading-spinner"></div>
+                <img src="https://origin.picgo.net/2025/11/29/-2025-11-29-09455be9e6ca21ae054a.md.png" alt="语文答案" loading="lazy">
                 <div class="image-info">语文答案</div>
-                <div class="zoom-hint">点击图片可放大查看</div>
+                <div class="zoom-hint">轻触图片可全屏查看</div>
             </div>
             
             <div class="nav-buttons">
@@ -216,7 +415,14 @@
     
     <div class="fullscreen-overlay">
         <button class="close-btn">×</button>
-        <img class="fullscreen-img" src="" alt="全屏查看">
+        <div class="zoomable-image-container">
+            <img class="zoomable-img" src="" alt="全屏查看">
+        </div>
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoom-in">+</button>
+            <button class="zoom-btn" id="zoom-out">-</button>
+            <button class="zoom-btn" id="zoom-reset">↻</button>
+        </div>
     </div>
 
     <script>
@@ -226,18 +432,67 @@
             'https://origin.picgo.net/2025/11/29/IMG_20251129_1014141e4d182fa1e68299.md.jpg'
         ];
         let currentChemIndex = 0;
+        let scale = 1;
+        let posX = 0;
+        let posY = 0;
+        let isDragging = false;
+        let startX, startY, translateX, translateY;
+        let initialDistance = 0;
+        let initialScale = 1;
+        
+        // 显示公告弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.querySelector('.announcement-modal');
+            modal.classList.add('active');
+            
+            // 关闭弹窗
+            document.querySelector('.modal-close-btn').addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+        });
+        
+        // 图片加载优化
+        function optimizeImageLoading() {
+            document.querySelectorAll('.image-container img').forEach(img => {
+                img.classList.add('loading');
+                
+                img.onload = function() {
+                    this.classList.remove('loading');
+                    this.classList.add('loaded');
+                    this.nextElementSibling.style.display = 'none';
+                };
+                
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    const container = this.closest('.image-container');
+                    if (container) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.textContent = '图片加载失败';
+                        errorMsg.style.color = '#ff4444';
+                        errorMsg.style.marginTop = '10px';
+                        container.appendChild(errorMsg);
+                    }
+                };
+                
+                if (img.complete && img.naturalWidth !== 0) {
+                    img.classList.remove('loading');
+                    img.classList.add('loaded');
+                    img.nextElementSibling.style.display = 'none';
+                }
+            });
+        }
         
         // 标签页切换
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
-                // 更新标签状态
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
                 
-                // 更新内容显示
                 const tabId = this.getAttribute('data-tab');
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(tabId).classList.add('active');
+                
+                setTimeout(optimizeImageLoading, 100);
             });
         });
         
@@ -263,9 +518,9 @@
             const nextBtn = document.getElementById('next-chem');
             
             img.src = chemImages[currentChemIndex];
+            img.classList.add('loading');
             info.textContent = `化学答案 ${currentChemIndex + 1}/${chemImages.length}`;
             
-            // 更新按钮状态
             prevBtn.disabled = currentChemIndex === 0;
             nextBtn.disabled = currentChemIndex === chemImages.length - 1;
         }
@@ -274,10 +529,15 @@
         document.querySelectorAll('.image-container img').forEach(img => {
             img.addEventListener('click', function() {
                 const overlay = document.querySelector('.fullscreen-overlay');
-                const fullscreenImg = document.querySelector('.fullscreen-img');
+                const fullscreenImg = document.querySelector('.zoomable-img');
                 
                 fullscreenImg.src = this.src;
                 overlay.classList.add('active');
+                
+                scale = 1;
+                posX = 0;
+                posY = 0;
+                updateZoomableImage();
             });
         });
         
@@ -292,6 +552,177 @@
                 this.classList.remove('active');
             }
         });
+        
+        // 键盘ESC键关闭全屏
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelector('.fullscreen-overlay').classList.remove('active');
+            }
+        });
+        
+        // 缩放控制
+        function updateZoomableImage() {
+            const img = document.querySelector('.zoomable-img');
+            img.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
+        
+        // 缩放按钮
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            scale *= 1.2;
+            updateZoomableImage();
+        });
+        
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            scale /= 1.2;
+            if (scale < 1) {
+                scale = 1;
+                posX = 0;
+                posY = 0;
+            }
+            updateZoomableImage();
+        });
+        
+        document.getElementById('zoom-reset').addEventListener('click', () => {
+            scale = 1;
+            posX = 0;
+            posY = 0;
+            updateZoomableImage();
+        });
+        
+        // 拖拽功能
+        const zoomableContainer = document.querySelector('.zoomable-image-container');
+        const zoomableImg = document.querySelector('.zoomable-img');
+        
+        zoomableContainer.addEventListener('mousedown', startDrag);
+        zoomableContainer.addEventListener('touchstart', startDragTouch, { passive: false });
+        
+        function startDrag(e) {
+            if (scale <= 1) return;
+            
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            translateX = posX;
+            translateY = posY;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+        }
+        
+        function startDragTouch(e) {
+            if (e.touches.length === 1 && scale > 1) {
+                e.preventDefault();
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                translateX = posX;
+                translateY = posY;
+                
+                document.addEventListener('touchmove', dragTouch, { passive: false });
+                document.addEventListener('touchend', endDragTouch);
+            } else if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) +
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                initialScale = scale;
+                
+                document.addEventListener('touchmove', pinchZoom, { passive: false });
+                document.addEventListener('touchend', endPinchZoom);
+            }
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            posX = translateX + (x - startX);
+            posY = translateY + (y - startY);
+            
+            updateZoomableImage();
+        }
+        
+        function dragTouch(e) {
+            if (!isDragging || e.touches.length !== 1) return;
+            
+            e.preventDefault();
+            const x = e.touches[0].clientX;
+            const y = e.touches[0].clientY;
+            
+            posX = translateX + (x - startX);
+            posY = translateY + (y - startY);
+            
+            updateZoomableImage();
+        }
+        
+        function pinchZoom(e) {
+            if (e.touches.length !== 2) return;
+            
+            e.preventDefault();
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const currentDistance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+            
+            if (initialDistance > 0) {
+                scale = initialScale * (currentDistance / initialDistance);
+                scale = Math.max(0.5, Math.min(scale, 5));
+                updateZoomableImage();
+            }
+        }
+        
+        function endDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+        }
+        
+        function endDragTouch() {
+            isDragging = false;
+            document.removeEventListener('touchmove', dragTouch);
+            document.removeEventListener('touchend', endDragTouch);
+        }
+        
+        function endPinchZoom() {
+            initialDistance = 0;
+            document.removeEventListener('touchmove', pinchZoom);
+            document.removeEventListener('touchend', endPinchZoom);
+        }
+        
+        // 滚轮缩放
+        zoomableContainer.addEventListener('wheel', function(e) {
+            if (scale <= 1 && e.deltaY > 0) return;
+            
+            e.preventDefault();
+            const rect = zoomableContainer.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            
+            const zoomIntensity = 0.1;
+            const wheelDelta = e.deltaY < 0 ? 1 : -1;
+            const newScale = scale * (1 + wheelDelta * zoomIntensity);
+            
+            if (newScale >= 0.5 && newScale <= 5) {
+                const scaleFactor = newScale / scale;
+                
+                posX = offsetX - (offsetX - posX) * scaleFactor;
+                posY = offsetY - (offsetY - posY) * scaleFactor;
+                
+                scale = newScale;
+                updateZoomableImage();
+            }
+        }, { passive: false });
+        
+        // 初始化图片加载优化
+        optimizeImageLoading();
     </script>
 </body>
 </html>
