@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>少羽牛逼-答案查看器</title>
+    <title>少羽NB-答案查看器</title>
     <style>
         :root {
             --primary-color: #4285f4;
@@ -25,12 +25,11 @@
             color: var(--text-color);
             line-height: 1.5;
             padding: 10px;
-            -webkit-text-size-adjust: 100%;
         }
         
         .embedded-viewer {
             width: 100%;
-            max-width: 100%;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
@@ -72,9 +71,6 @@
             transition: all 0.2s;
             border-bottom: 3px solid transparent;
             font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .tab.active {
@@ -85,7 +81,7 @@
         
         .tab-content {
             display: none;
-            padding: 12px;
+            padding: 16px;
         }
         
         .tab-content.active {
@@ -94,12 +90,11 @@
         
         .image-container {
             position: relative;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             text-align: center;
             height: 0;
-            padding-bottom: 140%; /* 更适合移动端的长图比例 */
+            padding-bottom: 140%;
             overflow: hidden;
-            touch-action: manipulation;
         }
         
         .image-container img {
@@ -115,7 +110,6 @@
             transition: transform 0.2s;
             border: 1px solid #eee;
             background: #f5f5f5;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .image-info {
@@ -135,11 +129,11 @@
             display: flex;
             justify-content: space-between;
             margin-top: 12px;
-            gap: 8px;
+            gap: 10px;
         }
         
         .nav-btn {
-            padding: 10px 12px;
+            padding: 8px 16px;
             background: var(--primary-color);
             color: white;
             border: none;
@@ -148,7 +142,6 @@
             font-size: 14px;
             transition: background 0.2s;
             flex: 1;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .nav-btn:hover {
@@ -185,8 +178,8 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            max-width: 90%;
-            width: 320px;
+            max-width: 400px;
+            width: 90%;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
@@ -222,7 +215,6 @@
             pointer-events: none;
             transition: opacity 0.3s;
             overflow: hidden;
-            touch-action: none;
         }
         
         .fullscreen-overlay.active {
@@ -237,7 +229,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            touch-action: none;
         }
         
         .zoomable-img {
@@ -246,32 +237,30 @@
             object-fit: contain;
             transition: transform 0.1s;
             transform-origin: 0 0;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .zoom-controls {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
+            bottom: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             z-index: 10;
         }
         
         .zoom-btn {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
             border-radius: 50%;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .zoom-btn:hover {
@@ -280,20 +269,19 @@
         
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 20px;
+            right: 20px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .loading-spinner {
@@ -301,9 +289,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
             border-top-color: var(--primary-color);
             animation: spin 1s ease-in-out infinite;
@@ -313,61 +301,40 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
         
-        /* 移动端优化 */
-        @media (max-width: 480px) {
-            .tab {
-                padding: 10px 6px;
-                font-size: 13px;
-            }
-            
-            .nav-btn {
-                padding: 8px 10px;
-                font-size: 13px;
-            }
-            
-            .image-container {
-                padding-bottom: 150%;
-            }
-            
-            .zoom-controls {
-                bottom: 10px;
-                right: 10px;
-            }
-            
-            .zoom-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 16px;
-            }
-            
-            .close-btn {
-                top: 10px;
-                right: 10px;
-                width: 32px;
-                height: 32px;
-                font-size: 16px;
-            }
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff4444;
+            font-size: 16px;
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
+            width: 80%;
         }
     </style>
 </head>
 <body>
-    <div class="announcement-modal">
+    <div class="announcement-modal active">
         <div class="modal-content">
             <h3>网站公告</h3>
             <p>本网站仅供个人娱乐，无任何违法行为，纯个人热爱</p>
-            <p>答案对不对我就不知道了🌝，第1次制作有bug正常🤔</p>
+            <p>答案对不对我就不知道了🤔，有bug属于正常现象</p>
             <button class="modal-close-btn">我知道了</button>
         </div>
     </div>
 
     <div class="embedded-viewer">
-        <div class="viewer-header">少羽牛逼-答案查看器</div>
+        <div class="viewer-header">答案查看器-少羽NB</div>
         <div class="header-tip">点击图片可放大查看，双指可缩放</div>
         
         <div class="tab-bar">
             <div class="tab active" data-tab="chemistry">化学答案</div>
             <div class="tab" data-tab="math">数学答案</div>
             <div class="tab" data-tab="chinese">语文答案</div>
+            <div class="tab" data-tab="biology">生物答案</div>
         </div>
         
         <div class="tab-content active" id="chemistry">
@@ -411,6 +378,20 @@
                 <button class="nav-btn" id="next-chinese" disabled>下一张</button>
             </div>
         </div>
+        
+        <div class="tab-content" id="biology">
+            <div class="image-container">
+                <div class="loading-spinner"></div>
+                <img src="https://origin.picgo.net/2025/11/29/IMG_20251129_112748120cc2699b98a46c.md.jpg" alt="生物答案" loading="lazy">
+                <div class="image-info">生物答案</div>
+                <div class="zoom-hint">轻触图片可全屏查看</div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prev-biology" disabled>上一张</button>
+                <button class="nav-btn" id="next-biology" disabled>下一张</button>
+            </div>
+        </div>
     </div>
     
     <div class="fullscreen-overlay">
@@ -443,12 +424,18 @@
         // 显示公告弹窗
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.querySelector('.announcement-modal');
-            modal.classList.add('active');
+            const closeBtn = document.querySelector('.modal-close-btn');
             
             // 关闭弹窗
-            document.querySelector('.modal-close-btn').addEventListener('click', function() {
+            closeBtn.addEventListener('click', function() {
                 modal.classList.remove('active');
+                localStorage.setItem('announcementClosed', 'true');
             });
+            
+            // 检查是否已经关闭过
+            if (!localStorage.getItem('announcementClosed')) {
+                modal.classList.add('active');
+            }
         });
         
         // 图片加载优化
@@ -459,7 +446,6 @@
                 img.onload = function() {
                     this.classList.remove('loading');
                     this.classList.add('loaded');
-                    this.nextElementSibling.style.display = 'none';
                 };
                 
                 img.onerror = function() {
@@ -468,8 +454,7 @@
                     if (container) {
                         const errorMsg = document.createElement('div');
                         errorMsg.textContent = '图片加载失败';
-                        errorMsg.style.color = '#ff4444';
-                        errorMsg.style.marginTop = '10px';
+                        errorMsg.classList.add('error-message');
                         container.appendChild(errorMsg);
                     }
                 };
@@ -477,7 +462,6 @@
                 if (img.complete && img.naturalWidth !== 0) {
                     img.classList.remove('loading');
                     img.classList.add('loaded');
-                    img.nextElementSibling.style.display = 'none';
                 }
             });
         }
@@ -534,6 +518,7 @@
                 fullscreenImg.src = this.src;
                 overlay.classList.add('active');
                 
+                // 重置缩放和位置
                 scale = 1;
                 posX = 0;
                 posY = 0;
