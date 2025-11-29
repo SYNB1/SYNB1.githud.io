@@ -3,150 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>答案展示━少羽牛逼</title>
+    <title>嵌入式答案查看器</title>
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --light: #f8f9fa;
-            --dark: #212529;
+            --primary-color: #4285f4;
+            --hover-color: #3367d6;
+            --bg-color: #f8f9fa;
+            --border-color: #dfe1e5;
+            --text-color: #3c4043;
         }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
+        
         body {
-            background-color: #f5f7ff;
-            color: var(--dark);
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
         }
-        .app-container {
-            max-width: 1000px;
+        
+        .embedded-viewer {
+            width: 100%;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 2rem;
-        }
-        .main-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        .main-title {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        .answer-card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
-        .card-header {
-            background: var(--light);
-            padding: 1.5rem;
-            border-bottom: 1px solid #eee;
+        
+        .viewer-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: 500;
         }
-        .card-title {
-            font-size: 1.8rem;
-            color: var(--primary);
-            font-weight: 600;
+        
+        .tab-bar {
+            display: flex;
+            background: #f1f3f4;
+            border-bottom: 1px solid var(--border-color);
         }
-        .card-body {
-            padding: 2rem;
-        }
-        .answer-image-container {
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
             text-align: center;
-            margin: 1.5rem 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
         }
-        .answer-image {
+        
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 16px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .image-container {
+            position: relative;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .image-container img {
             max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            cursor: zoom-in;
+            transition: transform 0.2s;
         }
-        .answer-meta {
-            color: #6c757d;
-            font-size: 0.9rem;
-            text-align: center;
-            margin-top: 1.5rem;
+        
+        .image-container img:hover {
+            transform: scale(1.02);
         }
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--primary);
-            font-size: 1.2rem;
+        
+        .image-info {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #5f6368;
         }
-        .error {
-            color: #dc3545;
-            text-align: center;
-            padding: 1rem;
-            background: #fff0f0;
-            border-radius: 8px;
-            margin: 1rem 0;
+        
+        .zoom-hint {
+            font-size: 13px;
+            color: #70757a;
+            margin-top: 4px;
+            font-style: italic;
         }
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 1rem;
-            }
-            .main-title {
-                font-size: 2rem;
-            }
-            .card-body {
-                padding: 1.5rem;
-            }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+        }
+        
+        .nav-btn {
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: var(--hover-color);
+        }
+        
+        .nav-btn:disabled {
+            background: #bdc1c6;
+            cursor: not-allowed;
+        }
+        
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .fullscreen-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .fullscreen-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="main-header">
-            <h1 class="main-title">📚 答案展示平台</h1>
-            <p class="subtitle">仅供参考-请勿拿去做非法用途-仅供个人使用-仅供娱乐</p>
-        </header>
-
-        <div class="answer-card">
-            <div class="card-header">
-                <h2 class="card-title">语文</h2>
+    <div class="embedded-viewer">
+        <div class="viewer-header">答案图片查看器</div>
+        
+        <div class="tab-bar">
+            <div class="tab active" data-tab="chemistry">化学答案</div>
+            <div class="tab" data-tab="chinese">语文答案</div>
+        </div>
+        
+        <div class="tab-content active" id="chemistry">
+            <div class="image-container">
+                <img src="https://origin.picgo.net/2025/11/29/IMG_20251129_10150270dc8d232eb2e755.md.jpg" alt="化学答案">
+                <div class="image-info">化学答案 1/2</div>
+                <div class="zoom-hint">点击图片可放大查看</div>
             </div>
             
-            <div class="card-body">
-                <div class="answer-image-container">
-                    <img id="answerImg" 
-                         class="answer-image"
-                         src="https://ftp.mioz.cn/test/2025/11/29/1764381575.JPG" 
-                         alt="题目答案"
-                         onload="document.getElementById('loading').style.display='none'"
-                         onerror="document.getElementById('loading').textContent='图片加载失败，请检查网络或刷新页面'; document.getElementById('loading').className='error'">
-                    <div id="loading" class="loading">正在加载答案...</div>
-                </div>
-
-                <div class="answer-meta">
-                    <span>更新时间: 2025年11月29日</span>
-                </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prev-chem">上一张</button>
+                <button class="nav-btn" id="next-chem">下一张</button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="chinese">
+            <div class="image-container">
+                <img src="https://origin.picgo.net/2025/11/29/-2025-11-29-09455be9e6ca21ae054a.md.png" alt="语文答案">
+                <div class="image-info">语文答案</div>
+                <div class="zoom-hint">点击图片可放大查看</div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prev-chinese" disabled>上一张</button>
+                <button class="nav-btn" id="next-chinese" disabled>下一张</button>
             </div>
         </div>
     </div>
+    
+    <div class="fullscreen-overlay">
+        <button class="close-btn">×</button>
+        <img class="fullscreen-img" src="" alt="全屏查看">
+    </div>
 
     <script>
-        // 图片加载状态检测
-        const imgElement = document.getElementById('answerImg');
-        const loadingElement = document.getElementById('loading');
+        // 初始化变量
+        const chemImages = [
+            'https://origin.picgo.net/2025/11/29/IMG_20251129_10150270dc8d232eb2e755.md.jpg',
+            'https://origin.picgo.net/2025/11/29/IMG_20251129_1014141e4d182fa1e68299.md.jpg'
+        ];
+        let currentChemIndex = 0;
         
-        imgElement.addEventListener('load', function() {
-            loadingElement.style.display = 'none';
+        // 标签页切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 更新标签状态
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 更新内容显示
+                const tabId = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
         });
         
-        imgElement.addEventListener('error', function() {
-            loadingElement.textContent = '图片加载失败，请检查网络或刷新页面';
-            loadingElement.className = 'error';
+        // 化学答案导航
+        document.getElementById('prev-chem').addEventListener('click', () => {
+            if (currentChemIndex > 0) {
+                currentChemIndex--;
+                updateChemView();
+            }
+        });
+        
+        document.getElementById('next-chem').addEventListener('click', () => {
+            if (currentChemIndex < chemImages.length - 1) {
+                currentChemIndex++;
+                updateChemView();
+            }
+        });
+        
+        function updateChemView() {
+            const img = document.querySelector('#chemistry img');
+            const info = document.querySelector('#chemistry .image-info');
+            const prevBtn = document.getElementById('prev-chem');
+            const nextBtn = document.getElementById('next-chem');
+            
+            img.src = chemImages[currentChemIndex];
+            info.textContent = `化学答案 ${currentChemIndex + 1}/${chemImages.length}`;
+            
+            // 更新按钮状态
+            prevBtn.disabled = currentChemIndex === 0;
+            nextBtn.disabled = currentChemIndex === chemImages.length - 1;
+        }
+        
+        // 全屏功能
+        document.querySelectorAll('.image-container img').forEach(img => {
+            img.addEventListener('click', function() {
+                const overlay = document.querySelector('.fullscreen-overlay');
+                const fullscreenImg = document.querySelector('.fullscreen-img');
+                
+                fullscreenImg.src = this.src;
+                overlay.classList.add('active');
+            });
+        });
+        
+        // 关闭全屏
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            document.querySelector('.fullscreen-overlay').classList.remove('active');
+        });
+        
+        // 点击背景关闭
+        document.querySelector('.fullscreen-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
         });
     </script>
 </body>
