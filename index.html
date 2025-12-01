@@ -1,1182 +1,302 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>诗雨网络集团</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-
         :root {
-
-            --primary: #3B82F6;
-
-            --primary-light: #60A5FA;
-
-            --primary-dark: #2563EB;
-
-            --secondary: #10B981;
-
+            --primary: #8B5CF6;
+            --primary-light: #A78BFA;
+            --primary-dark: #7C3AED;
+            --secondary: #EC4899;
             --accent: #F59E0B;
-
-            --dark-bg: #1E293B;
-
-            --dark-card: #334155;
-
+            --dark-bg: #0F172A;
+            --dark-card: #1E293B;
             --dark-text: #F8FAFC;
-
             --dark-text-light: #94A3B8;
-
-            --border-radius: 12px;
-
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
+            --border-radius: 8px;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease;
             --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-
         }
-
         
-
         * {
-
             margin: 0;
-
             padding: 0;
-
             box-sizing: border-box;
-
         }
-
         
-
         body {
-
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-
             color: var(--dark-text);
-
-            line-height: 1.5;
-
+            line-height: 1.4;
             background: var(--dark-bg);
-
             min-height: 100vh;
-
-            padding: 20px;
-
+            padding: 15px;
             position: relative;
-
             overflow-x: hidden;
-
+            font-size: 14px;
         }
-
         
-
-        /* 雨滴特效 */
-
-        .raindrop {
-
-            position: fixed;
-
-            width: 2px;
-
-            height: 15px;
-
-            background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.6));
-
-            border-radius: 0 0 5px 5px;
-
-            animation: rain linear infinite;
-
-            transform-origin: top;
-
-            pointer-events: none;
-
-            z-index: -1;
-
-        }
-
-        
-
-        @keyframes rain {
-
-            0% {
-
-                transform: translateY(-100px) translateX(0);
-
-                opacity: 0;
-
-            }
-
-            10% {
-
-                opacity: 1;
-
-            }
-
-            90% {
-
-                opacity: 1;
-
-            }
-
-            100% {
-
-                transform: translateY(100vh) translateX(20px);
-
-                opacity: 0;
-
-            }
-
-        }
-
-        
-
-        /* 闪电特效 */
-
-        .lightning {
-
-            position: fixed;
-
-            width: 100%;
-
-            height: 100%;
-
-            top: 0;
-
-            left: 0;
-
-            z-index: -1;
-
-            pointer-events: none;
-
-            overflow: hidden;
-
-        }
-
-        
-
-        .lightning-bolt {
-
-            position: absolute;
-
-            width: 3px;
-
-            height: 0;
-
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(100, 149, 237, 0.7));
-
-            opacity: 0;
-
-            transform: rotate(30deg);
-
-            transform-origin: top;
-
-            animation: lightning 4s infinite;
-
-            filter: blur(0.5px);
-
-            pointer-events: none;
-
-        }
-
-        
-
-        @keyframes lightning {
-
-            0%, 85% {
-
-                height: 0;
-
-                opacity: 0;
-
-            }
-
-            87% {
-
-                height: 100vh;
-
-                opacity: 0.9;
-
-            }
-
-            89% {
-
-                height: 100vh;
-
-                opacity: 0.7;
-
-            }
-
-            91% {
-
-                height: 100vh;
-
-                opacity: 0.5;
-
-            }
-
-            93% {
-
-                height: 100vh;
-
-                opacity: 0.3;
-
-            }
-
-            95% {
-
-                height: 100vh;
-
-                opacity: 0.1;
-
-            }
-
-            100% {
-
-                height: 0;
-
-                opacity: 0;
-
-            }
-
-        }
-
-        
-
-        /* 粒子特效 */
-
-        #particles-js {
-
-            position: fixed;
-
-            width: 100%;
-
-            height: 100%;
-
-            top: 0;
-
-            left: 0;
-
-            z-index: -2;
-
-            pointer-events: none;
-
-        }
-
-        
-
         .container {
-
-            max-width: 1200px;
-
+            max-width: 1000px;
             margin: 0 auto;
-
             position: relative;
-
             z-index: 1;
-
         }
-
         
-
-        /* 保留原有UI样式 */
-
         .header {
-
             text-align: center;
-
-            margin-bottom: 40px;
-
-            position: relative;
-
+            margin-bottom: 15px;
         }
-
         
-
         .logo-container {
-
-            position: relative;
-
             display: inline-block;
-
-            margin-bottom: 20px;
-
+            margin-bottom: 10px;
         }
-
         
-
         .logo {
-
-            width: 120px;
-
-            height: 120px;
-
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-
-            background: var(--gradient);
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             overflow: hidden;
-
             box-shadow: var(--shadow);
-
-            position: relative;
-
-            transition: var(--transition);
-
-            border: 3px solid rgba(255, 255, 255, 0.1);
-
-        }
-
-        
-
-        .logo:hover {
-
-            transform: scale(1.05);
-
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-
-        }
-
-        
-
-        .logo img {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: cover;
-
-        }
-
-        
-
-        .platform-name {
-
-            font-size: 2.25rem;
-
-            font-weight: 800;
-
-            margin-bottom: 0.5rem;
-
-            background: linear-gradient(to right, var(--primary-light), var(--secondary));
-
-            -webkit-background-clip: text;
-
-            -webkit-text-fill-color: transparent;
-
-            letter-spacing: -0.025em;
-
-        }
-
-        
-
-        .platform-desc-container {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 0.25rem;
-
-            max-width: 600px;
-
             margin: 0 auto;
-
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
-
         
-
-        .platform-desc-line {
-
-            color: var(--dark-text-light);
-
-            font-size: 1.125rem;
-
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
-
         
-
-        .category-container {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-
-            gap: 24px;
-
-            margin-top: 30px;
-
-        }
-
-        
-
-        .category-card {
-
-            background: var(--dark-card);
-
-            border-radius: var(--border-radius);
-
-            padding: 24px;
-
-            box-shadow: var(--shadow);
-
-            transition: var(--transition);
-
-            border-left: 4px solid var(--primary);
-
-            position: relative;
-
-            overflow: hidden;
-
-        }
-
-        
-
-        .category-card:hover {
-
-            transform: translateY(-5px);
-
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-
-        }
-
-        
-
-        .category-title {
-
-            font-size: 1.25rem;
-
-            font-weight: 600;
-
-            margin-bottom: 1rem;
-
-            display: flex;
-
-            align-items: center;
-
-            color: var(--primary-light);
-
-        }
-
-        
-
-        .category-title i {
-
-            margin-right: 10px;
-
-        }
-
-        
-
-        .function-list {
-
-            list-style: none;
-
-        }
-
-        
-
-        .function-item {
-
-            padding: 12px 0;
-
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            transition: var(--transition);
-
-        }
-
-        
-
-        .function-item:hover {
-
-            background: rgba(255, 255, 255, 0.02);
-
-            padding-left: 8px;
-
-            border-radius: 6px;
-
-        }
-
-        
-
-        .function-name {
-
-            font-size: 1rem;
-
-        }
-
-        
-
-        .btn {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            padding: 8px 16px;
-
+        .platform-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
             background: var(--gradient);
-
-            color: white;
-
-            border-radius: 6px;
-
-            font-size: 0.875rem;
-
-            text-decoration: none;
-
-            transition: var(--transition);
-
-            font-weight: 500;
-
-            border: none;
-
-            cursor: pointer;
-
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
         
-
-        .btn:hover {
-
-            transform: translateY(-2px);
-
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-
+        .platform-desc-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            max-width: 500px;
+            margin: 0 auto;
         }
-
         
-
-        .btn i {
-
-            margin-right: 6px;
-
-            font-size: 0.875rem;
-
-        }
-
-        
-
-        .footer {
-
-            text-align: center;
-
-            margin-top: 50px;
-
-            padding-top: 20px;
-
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-
+        .platform-desc-line {
             color: var(--dark-text-light);
-
+            font-size: 0.85rem;
         }
-
         
-
-        .footer p {
-
-            font-size: 0.875rem;
-
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
         }
-
         
-
+        .service-card {
+            background: var(--dark-card);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.2);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--primary-light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .service-list {
+            list-style: none;
+        }
+        
+        .service-item {
+            padding: 7px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .service-name {
+            font-size: 0.9rem;
+            flex: 1;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(139, 92, 246, 0.3);
+        }
+        
+        .action-btn i {
+            margin-right: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--dark-text-light);
+            font-size: 0.8rem;
+        }
+        
+        .bg-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+        }
+        
         @media (max-width: 768px) {
-
-            .category-container {
-
+            body {
+                padding: 12px;
+                font-size: 13px;
+            }
+            
+            .grid-container {
                 grid-template-columns: 1fr;
-
+                gap: 10px;
             }
-
             
-
             .platform-name {
-
-                font-size: 1.75rem;
-
+                font-size: 1.2rem;
             }
-
             
-
             .logo {
-
-                width: 100px;
-
-                height: 100px;
-
+                width: 60px;
+                height: 60px;
             }
-
+            
+            .service-card {
+                padding: 12px;
+            }
         }
-
     </style>
-
-
-<!-- 百度统计 -->
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?272119dae6cce7e3ded69c4a57f828d1";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-N13ZH72VV9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-N13ZH72VV9');
-</script>
 </head>
-
 <body>
-
-    <!-- 粒子特效容器 -->
-
-    <div id="particles-js"></div>
-
+    <div class="bg-effect"></div>
     
-
-    <!-- 雨滴特效容器 -->
-
-    <div id="raindrops-container"></div>
-
-    
-
-    <!-- 闪电特效容器 -->
-
-    <div class="lightning" id="lightning-container"></div>
-
-    
-
     <div class="container">
-
         <div class="header">
-
             <div class="logo-container">
-
                 <div class="logo">
-
-                    <img src="https://pb.nichi.co/pink-drum-connect" alt="诗雨网络集团头像">
-
+                    <img src="https://origin.picgo.net/2025/12/01/image_download_17618001459142fac0c988641f334.md.jpg" alt="诗雨网络集团Logo">
                 </div>
-
             </div>
-
             <h1 class="platform-name">诗雨网络集团</h1>
-
             <div class="platform-desc-container">
-
                 <p class="platform-desc-line">官方频道：@SYQQ91</p>
-
                 <p class="platform-desc-line">专业网络服务与解决方案提供商</p>
-
             </div>
-
         </div>
-
         
-
-        <div class="category-container">
-
-            <!-- 官方资源分类 -->
-
-            <div class="category-card">
-
-                <h2 class="category-title"><i class="fas fa-link"></i>官方资源</h2>
-
-                <ul class="function-list">
-
-                    <li class="function-item">
-
-                        <span class="function-name">官方频道</span>
-
-                        <a href="https://t.me/SYQQ91" class="btn"><i class="fab fa-telegram"></i> 加入【请挂VPN】</a>
-
+        <div class="grid-container">
+            <div class="service-card">
+                <h2 class="card-title"><i class="fas fa-link"></i>官方资源</h2>
+                <ul class="service-list">
+                    <li class="service-item">
+                        <span class="service-name">官方频道</span>
+                        <a href="https://t.me/SYQQ91" class="action-btn"><i class="fab fa-telegram"></i> 加入【请挂vpn】</a>
                     </li>
-
-                    <li class="function-item">
-
-                        <span class="function-name">八级号卡网</span>
-
-                        <a href="https://fh10.zmfaka.cn/shop/SYNB91" class="btn"><i class="fas fa-compass"></i> 访问</a>
-
+                    <li class="service-item">
+                        <span class="service-name">八级号卡网</span>
+                        <a href="https://fh10.zmfaka.cn/shop/SYNB91" class="action-btn"><i class="fas fa-compass"></i> 访问</a>
                     </li>
-
-                    <li class="function-item">
-
-                        <span class="function-name">货源卡网</span>
-
-                        <a href="https://sy.296k.my" class="btn"><i class="fas fa-credit-card"></i> 访问</a>
-
+                    <li class="service-item">
+                        <span class="service-name">货源卡网</span>
+                        <a href="https://sy.296k.my" class="action-btn"><i class="fas fa-credit-card"></i> 访问</a>
                     </li>
-
                 </ul>
-
             </div>
-
             
-
-            <!-- 主要工具分类 -->
-
-            <div class="category-card">
-
-                <h2 class="category-title"><i class="fas fa-tools"></i>主要工具</h2>
-
-                <ul class="function-list">
-
-                    <li class="function-item">
-
-                        <span class="function-name">脸书工具</span>
-
-                        <a href="https://ls.qsanio.com/" class="btn"><i class="fab fa-facebook"></i> 使用</a>
-
+            <div class="service-card">
+                <h2 class="card-title"><i class="fas fa-tools"></i>主要工具</h2>
+                <ul class="service-list">
+                    <li class="service-item">
+                        <span class="service-name">脸书工具</span>
+                        <a href="https://ls.qsanio.com/" class="action-btn"><i class="fab fa-facebook"></i> 使用</a>
                     </li>
-
-                    <li class="function-item">
-
-                        <span class="function-name">秘钥接码</span>
-
-                        <a href="https://2fa.show/" class="btn"><i class="fas fa-key"></i> 使用</a>
-
+                    <li class="service-item">
+                        <span class="service-name">秘钥接码</span>
+                        <a href="https://2fa.show/" class="action-btn"><i class="fas fa-key"></i> 使用</a>
                     </li>
-
-                    <li class="function-item">
-
-                        <span class="function-name">软件中心</span>
-
-                        <a href="https://fh10.zmfaka.cn/shop/SYNB91" class="btn"><i class="fas fa-book-open"></i> 查看</a>
-
+                    <li class="service-item">
+                        <span class="service-name">诗雨临时邮箱</span>
+                        <a href="https://fh10.zmfaka.cn/shop/SYNB91" class="action-btn"><i class="fas fa-book-open"></i> 访问</a>
                     </li>
-
                 </ul>
-
             </div>
-
             
-
-            <!-- 其他服务分类 -->
-
-            <div class="category-card">
-
-                <h2 class="category-title"><i class="fas fa-headset"></i>其他服务</h2>
-
-                <ul class="function-list">
-
-                    <li class="function-item">
-
-                        <span class="function-name">敬请期待</span>
-
-                        <a href="https://t.me/SIYI_NB" class="btn"><i class="fab fa-telegram"></i> 查看</a>
-
+            <div class="service-card">
+                <h2 class="card-title"><i class="fas fa-headset"></i>其他服务</h2>
+                <ul class="service-list">
+                    <li class="service-item">
+                        <span class="service-name">敬请期待</span>
+                        <a href="https://t.me/SIYI_NB" class="action-btn"><i class="fab fa-telegram"></i> 查看</a>
                     </li>
-
-                    <li class="function-item">
-
-                        <span class="function-name">敬请期待</span>
-
-                        <a href="https://vlink.cc/siyinb" class="btn"><i class="fab fa-weixin"></i> 查看</a>
-
+                    <li class="service-item">
+                        <span class="service-name">敬请期待</span>
+                        <a href="https://vlink.cc/siyinb" class="action-btn"><i class="fab fa-weixin"></i> 查看</a>
                     </li>
-
-                    <li class="function-item">
-
-                        <span class="function-name">敬请期待</span>
-
-                        <a href="https://vlink.cc/qw0827" class="btn"><i class="fas fa-gamepad"></i> 查看</a>
-
+                    <li class="service-item">
+                        <span class="service-name">敬请期待</span>
+                        <a href="https://vlink.cc/qw0827" class="action-btn"><i class="fas fa-gamepad"></i> 查看</a>
                     </li>
-
                 </ul>
-
             </div>
-
         </div>
-
         
-
         <div class="footer">
-
             <p>© 2025 诗雨网络集团 版权所有</p>
-
         </div>
-
     </div>
-
-    <!-- 引入particles.js库 -->
-
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
-    
-
-    <script>
-
-        // 创建雨滴特效
-
-        function createRaindrops() {
-
-            const container = document.getElementById('raindrops-container');
-
-            const numberOfDrops = 150;
-
-            
-
-            for (let i = 0; i < numberOfDrops; i++) {
-
-                const raindrop = document.createElement('div');
-
-                raindrop.classList.add('raindrop');
-
-                
-
-                // 随机位置
-
-                const left = Math.random() * 100;
-
-                const animationDuration = Math.random() * 1 + 0.5;
-
-                const animationDelay = Math.random() * 5;
-
-                const opacity = Math.random() * 0.5 + 0.3;
-
-                const height = Math.random() * 10 + 10;
-
-                
-
-                raindrop.style.left = `${left}vw`;
-
-                raindrop.style.animationDuration = `${animationDuration}s`;
-
-                raindrop.style.animationDelay = `${animationDelay}s`;
-
-                raindrop.style.opacity = opacity;
-
-                raindrop.style.height = `${height}px`;
-
-                
-
-                container.appendChild(raindrop);
-
-            }
-
-        }
-
-        
-
-        // 创建闪电特效
-
-        function createLightning() {
-
-            const container = document.getElementById('lightning-container');
-
-            const numberOfBolts = 5;
-
-            
-
-            // 先清空容器，防止重复创建
-
-            container.innerHTML = '';
-
-            
-
-            for (let i = 0; i < numberOfBolts; i++) {
-
-                const bolt = document.createElement('div');
-
-                bolt.classList.add('lightning-bolt');
-
-                
-
-                // 随机位置
-
-                const left = Math.random() * 80 + 10;
-
-                const animationDelay = Math.random() * 4;
-
-                const width = Math.random() * 3 + 2;
-
-                const rotation = Math.random() * 40 + 20;
-
-                
-
-                bolt.style.left = `${left}vw`;
-
-                bolt.style.animationDelay = `${animationDelay}s`;
-
-                bolt.style.width = `${width}px`;
-
-                bolt.style.transform = `rotate(${rotation}deg)`;
-
-                
-
-                container.appendChild(bolt);
-
-            }
-
-            
-
-            // 每4秒重新创建闪电
-
-            setTimeout(createLightning, 4000);
-
-        }
-
-        
-
-        // 初始化粒子背景
-
-        function initParticles() {
-
-            particlesJS('particles-js', {
-
-                "particles": {
-
-                    "number": {
-
-                        "value": 80,
-
-                        "density": {
-
-                            "enable": true,
-
-                            "value_area": 800
-
-                        }
-
-                    },
-
-                    "color": {
-
-                        "value": "#3B82F6"
-
-                    },
-
-                    "shape": {
-
-                        "type": "circle",
-
-                        "stroke": {
-
-                            "width": 0,
-
-                            "color": "#000000"
-
-                        }
-
-                    },
-
-                    "opacity": {
-
-                        "value": 0.5,
-
-                        "random": true,
-
-                        "anim": {
-
-                            "enable": true,
-
-                            "speed": 1,
-
-                            "opacity_min": 0.1,
-
-                            "sync": false
-
-                        }
-
-                    },
-
-                    "size": {
-
-                        "value": 3,
-
-                        "random": true,
-
-                        "anim": {
-
-                            "enable": true,
-
-                            "speed": 2,
-
-                            "size_min": 0.1,
-
-                            "sync": false
-
-                        }
-
-                    },
-
-                    "line_linked": {
-
-                        "enable": true,
-
-                        "distance": 150,
-
-                        "color": "#3B82F6",
-
-                        "opacity": 0.4,
-
-                        "width": 1
-
-                    },
-
-                    "move": {
-
-                        "enable": true,
-
-                        "speed": 2,
-
-                        "direction": "none",
-
-                        "random": true,
-
-                        "straight": false,
-
-                        "out_mode": "out",
-
-                        "bounce": false,
-
-                        "attract": {
-
-                            "enable": true,
-
-                            "rotateX": 600,
-
-                            "rotateY": 1200
-
-                        }
-
-                    }
-
-                },
-
-                "interactivity": {
-
-                    "detect_on": "canvas",
-
-                    "events": {
-
-                        "onhover": {
-
-                            "enable": true,
-
-                            "mode": "grab"
-
-                        },
-
-                        "onclick": {
-
-                            "enable": true,
-
-                            "mode": "push"
-
-                        },
-
-                        "resize": true
-
-                    },
-
-                    "modes": {
-
-                        "grab": {
-
-                            "distance": 140,
-
-                            "line_linked": {
-
-                                "opacity": 1
-
-                            }
-
-                        },
-
-                        "bubble": {
-
-                            "distance": 400,
-
-                            "size": 40,
-
-                            "duration": 2,
-
-                            "opacity": 8,
-
-                            "speed": 3
-
-                        },
-
-                        "repulse": {
-
-                            "distance": 200,
-
-                            "duration": 0.4
-
-                        },
-
-                        "push": {
-
-                            "particles_nb": 4
-
-                        },
-
-                        "remove": {
-
-                            "particles_nb": 2
-
-                        }
-
-                    }
-
-                },
-
-                "retina_detect": true
-
-            });
-
-        }
-
-        
-
-        // 页面加载完成后创建所有特效
-
-        window.addEventListener('load', () => {
-
-            createRaindrops();
-
-            createLightning();
-
-            initParticles();
-
-        });
-
-    </script>
-
 </body>
-
 </html>
