@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诗雨软件中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0066ff;
+            --secondary-color: #00c853;
+            --accent-color: #ff4081;
+            --dark-color: #333333;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --card-bg: #ffffff;
+            --body-bg: #f0f2f5;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        .dark-theme {
+            --primary-color: #4dabf7;
+            --secondary-color: #51cf66;
+            --accent-color: #ff6b9d;
+            --dark-color: #e9ecef;
+            --light-color: #212529;
+            --gray-color: #adb5bd;
+            --card-bg: #343a40;
+            --body-bg: #121416;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--dark-color);
+            line-height: 1.5;
+            transition: var(--transition);
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-size: 16px;
+            color: var(--dark-color);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg);
+        }
+
+        .search-container {
+            width: 100%;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: none;
+            border-radius: 25px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            font-size: 16px;
+            outline: none;
+            transition: var(--transition);
+            color: var(--dark-color);
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 15px;
+            text-align: center;
+            color: var(--dark-color);
+        }
+
+        .category-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 5px 0 10px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .category-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-btn {
+            background: var(--card-bg);
+            color: var(--dark-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            box-shadow: var(--shadow);
+        }
+
+        .category-btn.active, .category-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .app-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .app-icon-container {
+            margin-bottom: 12px;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 8px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .app-badge {
+            position: relative;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .app-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            height: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .app-download {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .app-download:hover {
+            opacity: 0.9;
+        }
+
+        .app-download i {
+            margin-right: 5px;
+        }
+
+        .app-count {
+            text-align: center;
+            color: var(--gray-color);
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .app-count-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--gray-color);
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--gray-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 12px;
+        }
+
+        .footer-link:hover {
+            color: var(--primary-color);
+        }
+
+        /* 弹窗公告样式 */
+        .announcement-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .announcement-modal {
+            background: var(--card-bg);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: translateY(0);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-content {
+            padding: 25px;
+            color: var(--dark-color);
+        }
+
+        .modal-step {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .step-text strong {
+            color: var(--primary-color);
+        }
+
+        .modal-footer {
+            padding: 20px 25px 25px;
+            text-align: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-confirm-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .announcement-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4);
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .announcement-badge:hover {
+            transform: scale(1.1);
+        }
+
+        .announcement-badge i {
+            font-size: 20px;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 12px;
+            }
+            
+            .app-card {
+                padding: 12px;
+            }
+            
+            .app-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .announcement-modal {
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 10px;
+            }
+            
+            .search-input {
+                padding: 10px 15px 10px 40px;
+                font-size: 14px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            .modal-step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 弹窗公告 -->
+    <div id="announcementOverlay" class="announcement-overlay">
+        <div class="announcement-modal">
+            <div class="modal-header">
+                <h3>下载教程</h3>
+                <button class="modal-close" id="modalCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="modal-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        <strong>第1步：选择你要下载的软件，点击下载</strong><br>
+                        在软件中心找到你想要下载的应用，点击对应的"下载"按钮。
+                    </div>
+                </div>
+                <div class="modal-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        <strong>第2步：进入下载界面进行下载</strong><br>
+                        点击下载后会进入一个下载界面，在界面中选择对应的软件版本，然后点击下载图标即可在浏览器中直接下载安装包。
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-confirm-btn" id="modalConfirmBtn">我知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公告悬浮按钮 -->
+    <div class="announcement-badge" id="announcementBadge">
+        <i class="fas fa-info-circle"></i>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="logo-text">诗雨软件中心</div>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索软件...">
+        </div>
+
+        <div class="app-count-container">
+            <div class="app-count">免费提供</div>
+        </div>
+
+        <h2 class="section-title">官方频道：@SY164</h2>
+        
+        <div class="category-container">
+            <button class="category-btn active" data-category="all">全部</button>
+            <button class="category-btn" data-category="social">社交</button>
+            <button class="category-btn" data-category="tools">工具</button>
+            <button class="category-btn" data-category="entertainment">娱乐</button>
+            <button class="category-btn" data-category="system">系统</button>
+            <button class="category-btn" data-category="games">游戏</button>
+        </div>
+
+        <div class="apps-grid" id="appsGrid">
+            <!-- 软件1 -->
+            <div class="app-card" data-category="social">
+                <div class="app-icon-container">
+                    <div class="app-icon">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                    <div class="app-badge">热</div>
+                </div>
+                <div class="app-name">推特（最新版本）</div>
+                <a href="https://share.feijipan.com/s/xfVxe638" class="app-download" target="_blank">
+                    <i class="fas fa-download"></i> 下载
+                </a>
+            </div>
+            
+            <!-- 软件2 -->
+            <div class="app-card" data-category="tools">
+                <div class="app-icon-container">
+                    <div class="app-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="app-badge">官方</div>
+                </div>
+                <div class="app-name">MT管理器</div>
+                <a href="https://share.feijipan.com/s/4kVxdSVx" class="app-download" target="_blank">
+                    <i class="fas fa-download"></i> 下载
+                </a>
+            </div>
+            
+            <!-- 软件3 -->
+            <div class="app-card" data-category="tools">
+                <div class="app-icon-container">
+                    <div class="app-icon">
+                        <i class="fab fa-google-play"></i>
+                    </div>
+                    <div class="app-badge">新</div>
+                </div>
+                <div class="app-name">谷歌商店</div>
+                <a href="https://share.feijipan.com/s/X1Vx1k94" class="app-download" target="_blank">
+                    <i class="fas fa-download"></i> 下载
+                </a>
+            </div>
+            
+            <!-- 软件4 -->
+            <div class="app-card" data-category="tools">
+                <div class="app-icon-container">
+                    <div class="app-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="app-badge">荐</div>
+                </div>
+                <div class="app-name">小哈免费VPN</div>
+                <a href="https://share.feijipan.com/s/IvVx2QW3" class="app-download" target="_blank">
+                    <i class="fas fa-download"></i> 下载
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-links">
+                <a href="#" class="footer-link">关于我们</a>
+                <a href="#" class="footer-link">用户协议</a>
+                <a href="#" class="footer-link">隐私政策</a>
+                <a href="#" class="footer-link">联系方式</a>
+            </div>
+            <p>&copy; 2026 诗雨软件中心. 保留所有权利.</p>
+        </footer>
+    </div>
+
+    <script>
+        // 弹窗公告功能
+        const announcementOverlay = document.getElementById('announcementOverlay');
+        const announcementBadge = document.getElementById('announcementBadge');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        
+        // 检查是否已阅读过公告
+        function hasReadAnnouncement() {
+            return localStorage.getItem('announcementRead') === 'true';
+        }
+        
+        // 标记为已阅读
+        function markAsRead() {
+            localStorage.setItem('announcementRead', 'true');
+        }
+        
+        // 显示公告弹窗
+        function showAnnouncement() {
+            announcementOverlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 隐藏公告弹窗
+        function hideAnnouncement() {
+            announcementOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            markAsRead();
+        }
+        
+        // 事件监听
+        announcementBadge.addEventListener('click', showAnnouncement);
+        modalCloseBtn.addEventListener('click', hideAnnouncement);
+        modalConfirmBtn.addEventListener('click', hideAnnouncement);
+        
+        // 点击遮罩层关闭
+        announcementOverlay.addEventListener('click', function(e) {
+            if (e.target === announcementOverlay) {
+                hideAnnouncement();
+            }
+        });
+        
+        // 页面加载时立即显示弹窗
+        window.addEventListener('load', function() {
+            // 页面加载完成后立即显示弹窗
+            showAnnouncement();
+        });
+
+        // 主题切换功能
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            
+            if (document.body.classList.contains('dark-theme')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // 检查本地存储中的主题设置
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+
+        // 类别切换功能
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const appCards = document.querySelectorAll('.app-card');
+        
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const selectedCategory = this.dataset.category;
+                
+                appCards.forEach(card => {
+                    if (selectedCategory === 'all' || card.dataset.category === selectedCategory) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 搜索功能
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            appCards.forEach(card => {
+                const appName = card.querySelector('.app-name').textContent.toLowerCase();
+                
+                if (appName.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // 添加下载点击效果
+        document.querySelectorAll('.app-download').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 下载中...';
+                    btn.style.opacity = '0.7';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.opacity = '1';
+                        alert('该应用暂不可用，请稍后再试');
+                    }, 800);
+                } else {
+                    // 为真实下载链接添加点击反馈
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 下载中...';
+                    btn.style.opacity = '0.7';
+                    
+                    // 重置按钮状态
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.opacity = '1';
+                    }, 1500);
+                }
+            });
+        });
+
+        // 初始显示所有应用
+        appCards.forEach(card => {
+            card.style.display = 'flex';
+        });
+    </script>
+</body>
+</html>
